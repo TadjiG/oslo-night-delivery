@@ -4,6 +4,7 @@ import { deliveryPoint } from "./delivery.js";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 let money = 0;
+let battery = 100;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -36,10 +37,16 @@ function drawTitle() {
 
   ctx.font = "24px Arial";
   ctx.fillText(`Money: ${money} NOK`, 50, 100);
+  ctx.fillText(`Battery: ${Math.floor(battery)}%`, 50, 130);
 }
 
 function updatePlayer() {
-  if (keys["w"]) {
+    if (battery <= 0) {
+  battery = 0;
+  return;
+  }
+    
+    if (keys["w"]) {
     player.y -= player.speed;
   }
 
@@ -54,6 +61,12 @@ function updatePlayer() {
   if (keys["d"]) {
     player.x += player.speed;
   }
+
+  const isMoving = keys["w"] || keys["s"] || keys["a"] || keys["d"];
+
+if (isMoving && battery > 0) {
+  battery -= 0.05;
+}
 
   // Keep player inside the screen
   if (player.x < 0) {
@@ -83,6 +96,12 @@ function checkDeliveryCollision() {
   if (collision) {
     money += deliveryPoint.reward;
 
+    battery += 15;
+
+    if (battery > 100) {
+  battery = 100;
+}
+    
     deliveryPoint.x = Math.random() * (canvas.width - deliveryPoint.width);
 
     deliveryPoint.y = Math.random() * (canvas.height - deliveryPoint.height);
