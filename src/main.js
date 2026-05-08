@@ -1,5 +1,6 @@
 import { player, keys } from "./player.js";
 import { deliveryPoint } from "./delivery.js";
+import { createRoads } from "./map.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -10,9 +11,19 @@ let gameOver = false;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+const roads = createRoads(canvas);
+
 function drawBackground() {
   ctx.fillStyle = "#0f172a";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawRoads() {
+  ctx.fillStyle = "#334155";
+
+  roads.forEach((road) => {
+    ctx.fillRect(road.x, road.y, road.width, road.height);
+  });
 }
 
 function drawPlayer() {
@@ -153,6 +164,7 @@ window.addEventListener("keydown", (event) => {
 
 function gameLoop() {
   drawBackground();
+  drawRoads();
 
   if (!gameOver) {
     updatePlayer();
