@@ -27,6 +27,25 @@ function drawRoads() {
   });
 }
 
+function drawRoadLines() {
+  ctx.strokeStyle = "#facc15";
+  ctx.lineWidth = 4;
+
+  roads.forEach((road) => {
+    ctx.beginPath();
+
+    if (road.width > road.height) {
+      ctx.moveTo(road.x, road.y + road.height / 2);
+      ctx.lineTo(road.x + road.width, road.y + road.height / 2);
+    } else {
+      ctx.moveTo(road.x + road.width / 2, road.y);
+      ctx.lineTo(road.x + road.width / 2, road.y + road.height);
+    }
+
+    ctx.stroke();
+  });
+}
+
 function drawBuildings() {
   ctx.fillStyle = "#1e293b";
 
@@ -179,6 +198,7 @@ window.addEventListener("keydown", (event) => {
 function gameLoop() {
   drawBackground();
   drawRoads();
+  drawRoadLines();
   drawBuildings();
 
   if (!gameOver) {
