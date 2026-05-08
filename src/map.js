@@ -18,3 +18,12 @@ export function createBuildings() {
     { x: 900, y: 650, width: 240, height: 150 },
   ];
 }
+
+export function createStreetLights() {
+  return [
+    { x: 260, y: 200 },
+    { x: 260, y: 500 },
+    { x: 660, y: 200 },
+    { x: 660, y: 500 },
+  ];
+}

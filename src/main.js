@@ -1,6 +1,10 @@
 import { player, keys } from "./player.js";
 import { deliveryPoint } from "./delivery.js";
-import { createRoads, createBuildings } from "./map.js";
+import {
+  createRoads,
+  createBuildings,
+  createStreetLights,
+} from "./map.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -13,6 +17,7 @@ canvas.height = window.innerHeight;
 
 const roads = createRoads(canvas);
 const buildings = createBuildings();
+const streetLights = createStreetLights();
 
 function drawBackground() {
   ctx.fillStyle = "#0f172a";
@@ -56,6 +61,21 @@ function drawBuildings() {
       building.width,
       building.height
     );
+  });
+}
+
+function drawStreetLights() {
+  streetLights.forEach((light) => {
+
+    // Pole
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillRect(light.x, light.y, 8, 30);
+
+    // Light
+    ctx.fillStyle = "#fde68a";
+    ctx.beginPath();
+    ctx.arc(light.x + 4, light.y, 10, 0, Math.PI * 2);
+    ctx.fill();
   });
 }
 
@@ -200,6 +220,7 @@ function gameLoop() {
   drawRoads();
   drawRoadLines();
   drawBuildings();
+  drawStreetLights();
 
   if (!gameOver) {
     updatePlayer();
