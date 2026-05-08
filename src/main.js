@@ -1,6 +1,6 @@
 import { player, keys } from "./player.js";
 import { deliveryPoint } from "./delivery.js";
-import { createRoads } from "./map.js";
+import { createRoads, createBuildings } from "./map.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -12,6 +12,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const roads = createRoads(canvas);
+const buildings = createBuildings();
 
 function drawBackground() {
   ctx.fillStyle = "#0f172a";
@@ -23,6 +24,19 @@ function drawRoads() {
 
   roads.forEach((road) => {
     ctx.fillRect(road.x, road.y, road.width, road.height);
+  });
+}
+
+function drawBuildings() {
+  ctx.fillStyle = "#1e293b";
+
+  buildings.forEach((building) => {
+    ctx.fillRect(
+      building.x,
+      building.y,
+      building.width,
+      building.height
+    );
   });
 }
 
@@ -165,6 +179,7 @@ window.addEventListener("keydown", (event) => {
 function gameLoop() {
   drawBackground();
   drawRoads();
+  drawBuildings();
 
   if (!gameOver) {
     updatePlayer();
