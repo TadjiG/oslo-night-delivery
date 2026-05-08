@@ -5,6 +5,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 let money = 0;
 let battery = 100;
+let gameOver = false;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -40,13 +41,31 @@ function drawTitle() {
   ctx.fillText(`Battery: ${Math.floor(battery)}%`, 50, 130);
 }
 
+function drawGameOver() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "white";
+
+  ctx.font = "64px Arial";
+  ctx.fillText("GAME OVER", canvas.width / 2 - 200, canvas.height / 2);
+
+  ctx.font = "32px Arial";
+  ctx.fillText(
+    `Final Money: ${money} NOK`,
+    canvas.width / 2 - 140,
+    canvas.height / 2 + 60
+  );
+}
+
 function updatePlayer() {
-    if (battery <= 0) {
-  battery = 0;
-  return;
+  if (battery <= 0) {
+    battery = 0;
+    gameOver = true;
+    return;
   }
-    
-    if (keys["w"]) {
+
+  if (keys["w"]) {
     player.y -= player.speed;
   }
 
@@ -64,11 +83,10 @@ function updatePlayer() {
 
   const isMoving = keys["w"] || keys["s"] || keys["a"] || keys["d"];
 
-if (isMoving && battery > 0) {
-  battery -= 0.05;
-}
+  if (isMoving && battery > 0) {
+    battery -= 0.05;
+  }
 
-  // Keep player inside the screen
   if (player.x < 0) {
     player.x = 0;
   }
@@ -111,12 +129,18 @@ function checkDeliveryCollision() {
 function gameLoop() {
   drawBackground();
 
-  updatePlayer();
-  checkDeliveryCollision();
+  if (!gameOver) {
+    updatePlayer();
+    checkDeliveryCollision();
+  }
 
   drawTitle();
   drawDeliveryPoint();
   drawPlayer();
+
+  if (gameOver) {
+    drawGameOver();
+  }
 
   requestAnimationFrame(gameLoop);
 }
