@@ -1,7 +1,9 @@
 import { player, keys } from "./player.js";
+import { deliveryPoint } from "./delivery.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+let money = 0;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -16,10 +18,24 @@ function drawPlayer() {
   ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
+function drawDeliveryPoint() {
+  ctx.fillStyle = "#facc15";
+  ctx.fillRect(
+    deliveryPoint.x,
+    deliveryPoint.y,
+    deliveryPoint.width,
+    deliveryPoint.height
+  );
+}
+
 function drawTitle() {
   ctx.fillStyle = "white";
+
   ctx.font = "32px Arial";
   ctx.fillText("Oslo Night Delivery", 50, 60);
+
+  ctx.font = "24px Arial";
+  ctx.fillText(`Money: ${money} NOK`, 50, 100);
 }
 
 function updatePlayer() {
@@ -57,12 +73,30 @@ function updatePlayer() {
   }
 }
 
+function checkDeliveryCollision() {
+  const collision =
+    player.x < deliveryPoint.x + deliveryPoint.width &&
+    player.x + player.width > deliveryPoint.x &&
+    player.y < deliveryPoint.y + deliveryPoint.height &&
+    player.y + player.height > deliveryPoint.y;
+
+  if (collision) {
+    money += deliveryPoint.reward;
+
+    deliveryPoint.x = Math.random() * (canvas.width - deliveryPoint.width);
+
+    deliveryPoint.y = Math.random() * (canvas.height - deliveryPoint.height);
+  }
+}
+
 function gameLoop() {
   drawBackground();
 
   updatePlayer();
+  checkDeliveryCollision();
 
   drawTitle();
+  drawDeliveryPoint();
   drawPlayer();
 
   requestAnimationFrame(gameLoop);
