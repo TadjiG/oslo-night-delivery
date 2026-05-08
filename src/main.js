@@ -56,6 +56,13 @@ function drawGameOver() {
     canvas.width / 2 - 140,
     canvas.height / 2 + 60
   );
+
+  ctx.font = "24px Arial";
+  ctx.fillText(
+    "Press R to restart",
+    canvas.width / 2 - 110,
+    canvas.height / 2 + 120
+  );
 }
 
 function updatePlayer() {
@@ -125,6 +132,24 @@ function checkDeliveryCollision() {
     deliveryPoint.y = Math.random() * (canvas.height - deliveryPoint.height);
   }
 }
+
+function restartGame() {
+  money = 0;
+  battery = 100;
+  gameOver = false;
+
+  player.x = 100;
+  player.y = 100;
+
+  deliveryPoint.x = 500;
+  deliveryPoint.y = 300;
+}
+
+window.addEventListener("keydown", (event) => {
+  if (gameOver && event.key.toLowerCase() === "r") {
+    restartGame();
+  }
+});
 
 function gameLoop() {
   drawBackground();
