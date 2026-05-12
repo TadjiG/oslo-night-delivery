@@ -1,5 +1,10 @@
 import { player, keys } from "./player.js";
-import { deliveryPoint } from "./delivery.js";
+import {
+  pickupPoint,
+  dropoffPoint,
+  hasOrder,
+  setHasOrder,
+} from "./delivery.js";
 import {
   createRoads,
   createBuildings,
@@ -84,14 +89,28 @@ function drawPlayer() {
   ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
-function drawDeliveryPoint() {
-  ctx.fillStyle = "#facc15";
+function drawDeliveryPoints() {
+
+  // Pickup point
+  ctx.fillStyle = "#22c55e";
   ctx.fillRect(
-    deliveryPoint.x,
-    deliveryPoint.y,
-    deliveryPoint.width,
-    deliveryPoint.height
+    pickupPoint.x,
+    pickupPoint.y,
+    pickupPoint.width,
+    pickupPoint.height
   );
+
+  // Dropoff point
+  if (hasOrder) {
+    ctx.fillStyle = "#ef4444";
+
+    ctx.fillRect(
+      dropoffPoint.x,
+      dropoffPoint.y,
+      dropoffPoint.width,
+      dropoffPoint.height
+    );
+  }
 }
 
 function drawTitle() {
@@ -176,24 +195,43 @@ function updatePlayer() {
 }
 
 function checkDeliveryCollision() {
-  const collision =
-    player.x < deliveryPoint.x + deliveryPoint.width &&
-    player.x + player.width > deliveryPoint.x &&
-    player.y < deliveryPoint.y + deliveryPoint.height &&
-    player.y + player.height > deliveryPoint.y;
 
-  if (collision) {
-    money += deliveryPoint.reward;
+  // Pickup collision
+  const pickupCollision =
+    player.x < pickupPoint.x + pickupPoint.width &&
+    player.x + player.width > pickupPoint.x &&
+    player.y < pickupPoint.y + pickupPoint.height &&
+    player.y + player.height > pickupPoint.y;
 
-    battery += 15;
+  if (pickupCollision && !hasOrder) {
+
+    setHasOrder(true);
+
+    dropoffPoint.x =
+      Math.random() * (canvas.width - dropoffPoint.width);
+
+    dropoffPoint.y =
+      Math.random() * (canvas.height - dropoffPoint.height);
+  }
+
+  // Dropoff collision
+  const dropoffCollision =
+    player.x < dropoffPoint.x + dropoffPoint.width &&
+    player.x + player.width > dropoffPoint.x &&
+    player.y < dropoffPoint.y + dropoffPoint.height &&
+    player.y + player.height > dropoffPoint.y;
+
+  if (dropoffCollision && hasOrder) {
+
+    money += 100;
+
+    battery += 20;
 
     if (battery > 100) {
-  battery = 100;
-}
-    
-    deliveryPoint.x = Math.random() * (canvas.width - deliveryPoint.width);
+      battery = 100;
+    }
 
-    deliveryPoint.y = Math.random() * (canvas.height - deliveryPoint.height);
+    setHasOrder(false);
   }
 }
 
@@ -228,7 +266,7 @@ function gameLoop() {
   }
 
   drawTitle();
-  drawDeliveryPoint();
+  drawDeliveryPoints();
   drawPlayer();
 
   if (gameOver) {
