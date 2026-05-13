@@ -18,6 +18,7 @@ const ctx = canvas.getContext("2d");
 let money = 0;
 let battery = 100;
 let gameOver = false;
+let collisionCooldown = 0;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -121,6 +122,53 @@ function updateCars() {
       if (car.x + car.width < 0) {
         car.x = canvas.width;
       }
+    }
+
+  });
+
+}
+
+function checkCarCollision() {
+
+  if (collisionCooldown > 0) {
+    collisionCooldown--;
+    return;
+  }
+
+  cars.forEach((car) => {
+
+    const collision =
+      player.x < car.x + car.width &&
+      player.x + player.width > car.x &&
+      player.y < car.y + car.height &&
+      player.y + player.height > car.y;
+
+    if (collision) {
+
+      battery -= 20;
+
+      collisionCooldown = 60;
+
+      if (battery < 0) {
+        battery = 0;
+      }
+
+      if (player.direction === "right") {
+        player.x -= 40;
+      }
+
+      if (player.direction === "left") {
+        player.x += 40;
+      }
+
+      if (player.direction === "up") {
+        player.y += 40;
+      }
+
+      if (player.direction === "down") {
+        player.y -= 40;
+      }
+
     }
 
   });
@@ -313,19 +361,16 @@ function restartGame() {
   money = 0;
   battery = 100;
   gameOver = false;
+  collisionCooldown = 0;
 
-  player.x = 100;
-  player.y = 100;
+  player.x = 120;
+  player.y = 260;
+  player.direction = "right";
 
-  deliveryPoint.x = 500;
-  deliveryPoint.y = 300;
+  movePointToRandomRoad(pickupPoint, roads);
+  movePointToRandomRoad(dropoffPoint, roads);
+  setHasOrder(false);
 }
-
-window.addEventListener("keydown", (event) => {
-  if (gameOver && event.key.toLowerCase() === "r") {
-    restartGame();
-  }
-});
 
 function gameLoop() {
   drawBackground();
@@ -337,10 +382,11 @@ function gameLoop() {
   drawCars();
 
   if (!gameOver) {
-    updatePlayer();
-    updateCars();
-    checkDeliveryCollision();
-  }
+  updatePlayer();
+  updateCars();
+  checkDeliveryCollision();
+  checkCarCollision();
+}
 
   drawTitle();
   drawDeliveryPoints();
@@ -352,5 +398,11 @@ function gameLoop() {
 
   requestAnimationFrame(gameLoop);
 }
+
+window.addEventListener("keydown", (event) => {
+  if (gameOver && event.key.toLowerCase() === "r") {
+    restartGame();
+  }
+});
 
 gameLoop();
