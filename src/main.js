@@ -11,6 +11,7 @@ import {
   createBuildings,
   createStreetLights,
 } from "./map.js";
+import { cars } from "./traffic.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -83,6 +84,47 @@ function drawStreetLights() {
     ctx.arc(light.x + 4, light.y, 10, 0, Math.PI * 2);
     ctx.fill();
   });
+}
+
+function drawCars() {
+
+  cars.forEach((car) => {
+
+    ctx.fillStyle = "#ef4444";
+
+    ctx.fillRect(
+      car.x,
+      car.y,
+      car.width,
+      car.height
+    );
+
+  });
+
+}
+
+function updateCars() {
+
+  cars.forEach((car) => {
+
+    if (car.direction === "right") {
+      car.x += car.speed;
+
+      if (car.x > canvas.width) {
+        car.x = -car.width;
+      }
+    }
+
+    if (car.direction === "left") {
+      car.x -= car.speed;
+
+      if (car.x + car.width < 0) {
+        car.x = canvas.width;
+      }
+    }
+
+  });
+
 }
 
 function isCollidingWithBuilding(x, y) {
@@ -287,13 +329,16 @@ window.addEventListener("keydown", (event) => {
 
 function gameLoop() {
   drawBackground();
+
   drawRoads();
   drawRoadLines();
   drawBuildings();
   drawStreetLights();
+  drawCars();
 
   if (!gameOver) {
     updatePlayer();
+    updateCars();
     checkDeliveryCollision();
   }
 
