@@ -85,6 +85,21 @@ function drawStreetLights() {
   });
 }
 
+function isCollidingWithBuilding(x, y) {
+
+  return buildings.some((building) => {
+
+    return (
+      x < building.x + building.width &&
+      x + player.width > building.x &&
+      y < building.y + building.height &&
+      y + player.height > building.y
+    );
+
+  });
+
+}
+
 function drawPlayer() {
   ctx.fillStyle = "#22c55e";
   ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -150,34 +165,52 @@ function drawGameOver() {
 }
 
 function updatePlayer() {
+
   if (battery <= 0) {
     battery = 0;
     gameOver = true;
     return;
   }
 
+  let nextX = player.x;
+  let nextY = player.y;
+
   if (keys["w"]) {
-    player.y -= player.speed;
+    nextY -= player.speed;
+    player.direction = "up";
   }
 
   if (keys["s"]) {
-    player.y += player.speed;
+    nextY += player.speed;
+    player.direction = "down";
   }
 
   if (keys["a"]) {
-    player.x -= player.speed;
+    nextX -= player.speed;
+    player.direction = "left";
   }
 
   if (keys["d"]) {
-    player.x += player.speed;
+    nextX += player.speed;
+    player.direction = "right";
   }
 
-  const isMoving = keys["w"] || keys["s"] || keys["a"] || keys["d"];
+  if (!isCollidingWithBuilding(nextX, nextY)) {
+    player.x = nextX;
+    player.y = nextY;
+  }
+
+  const isMoving =
+    keys["w"] ||
+    keys["s"] ||
+    keys["a"] ||
+    keys["d"];
 
   if (isMoving && battery > 0) {
     battery -= 0.05;
   }
 
+  // Screen boundaries
   if (player.x < 0) {
     player.x = 0;
   }
