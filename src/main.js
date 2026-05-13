@@ -12,6 +12,7 @@ import {
   createStreetLights,
 } from "./map.js";
 import { cars } from "./traffic.js";
+import { chargingStations } from "./chargingStations.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -104,6 +105,34 @@ function drawCars() {
 
 }
 
+function drawChargingStations() {
+
+  chargingStations.forEach((station) => {
+
+    ctx.fillStyle = "#3b82f6";
+
+    ctx.fillRect(
+      station.x,
+      station.y,
+      station.width,
+      station.height
+    );
+
+    // Lightning symbol
+    ctx.fillStyle = "white";
+
+    ctx.font = "24px Arial";
+
+    ctx.fillText(
+      "⚡",
+      station.x + 8,
+      station.y + 28
+    );
+
+  });
+
+}
+
 function updateCars() {
 
   cars.forEach((car) => {
@@ -167,6 +196,30 @@ function checkCarCollision() {
 
       if (player.direction === "down") {
         player.y -= 40;
+      }
+
+    }
+
+  });
+
+}
+
+function checkChargingStationCollision() {
+
+  chargingStations.forEach((station) => {
+
+    const collision =
+      player.x < station.x + station.width &&
+      player.x + player.width > station.x &&
+      player.y < station.y + station.height &&
+      player.y + player.height > station.y;
+
+    if (collision) {
+
+      battery += 0.4;
+
+      if (battery > 100) {
+        battery = 100;
       }
 
     }
@@ -380,12 +433,14 @@ function gameLoop() {
   drawBuildings();
   drawStreetLights();
   drawCars();
+  drawChargingStations();
 
   if (!gameOver) {
   updatePlayer();
   updateCars();
   checkDeliveryCollision();
   checkCarCollision();
+  checkChargingStationCollision();
 }
 
   drawTitle();
