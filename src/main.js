@@ -4,7 +4,7 @@ import {
   dropoffPoint,
   hasOrder,
   setHasOrder,
-  movePointToRandomPosition,
+  movePointToRandomRoad,
 } from "./delivery.js";
 import {
   createRoads,
@@ -283,7 +283,7 @@ function checkDeliveryCollision() {
 
     setHasOrder(true);
 
-   movePointToRandomPosition(dropoffPoint, canvas);
+   movePointToRandomRoad(dropoffPoint, roads);
   }
 
   // Dropoff collision
@@ -305,7 +305,7 @@ function checkDeliveryCollision() {
 
     setHasOrder(false);
 
-    movePointToRandomPosition(pickupPoint, canvas);
+    movePointToRandomRoad(pickupPoint, roads);
   }
 }
 
